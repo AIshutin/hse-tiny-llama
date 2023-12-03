@@ -163,7 +163,6 @@ def evaluate_examples(examples):
             if res['grammar'] is None: # retry once just in case
                 res = chat.evaluate(el['prompt'], t)
             results.append(res)
-        break
     grammar_grades = [el['grammar'] for el in results if el['grammar'] is not None]
     creativity_grades = [el['creativity'] for el in results if el['creativity'] is not None]
     consistency_grades = [el['consistency'] for el in results if el['consistency'] is not None]
