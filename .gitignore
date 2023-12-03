@@ -1,0 +1,15 @@
+TinyStories/*
+spm-tokenizer/*
+*.tar.gz
+openme-Copy1.ipynb
+*.pt
+autoeval.ipynb
+q.py
+.ipynb_checkpoints
+checkpoints/*
+comparison_artifacts/*
+spm-tokenizer/*
+TinyStories/*
+wandb
+__pycache__
+*.zip
