@@ -1,7 +1,5 @@
 from torch import nn
 import torch
-from torch.nn import functional as F
-import numpy as np
 
 
 def make_alibi_masks(B, N, n_heads, device=torch.device('cpu')):
@@ -78,7 +76,7 @@ class PositionalEncoding(nn.Module):
 
 class SimplerDimplerModel(nn.Module):
     def __init__(self, vocab_size, n_layers=4, embed_dim=128, n_heads=8, ffw_size=1024, \
-                 dropout=0.1, kqdim=64):
+                 dropout=0.1):
         super().__init__()
         self.embeds = nn.Embedding(vocab_size, embed_dim)
         self.transformer = nn.TransformerEncoder(

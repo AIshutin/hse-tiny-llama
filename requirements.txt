@@ -1,2 +1,5 @@
 torch>=2.0.0
 sentencepiece==0.1.99
+wandb
+tqdm
+flash_attn

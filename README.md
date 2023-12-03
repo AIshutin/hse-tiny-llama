@@ -26,3 +26,4 @@ gdown https://drive.google.com/file/d/1AglrB9GG8cmQ1IKGfg4dPX3yx_8_EQVH/view?usp
 
 ### Evaluation
 
+Use test.py and aieval.py. For detailed instructions, check the report.

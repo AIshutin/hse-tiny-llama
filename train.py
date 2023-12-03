@@ -6,7 +6,6 @@ import argparse
 import sentencepiece as spm
 from pathlib import Path
 import wandb
-from time import sleep
 from torch.cuda.amp import GradScaler
 import math
 
@@ -50,20 +49,24 @@ if __name__ == "__main__":
         len(tokenizer), n_layers=args.n_layers, embed_dim=args.embed_dim, 
         n_heads=args.n_heads, ffw_size=4 * args.embed_dim, dropout=args.dropout, 
     ).to(device)
-    #print(model)
-    #for layer in model.transformer.layers:
-    #    layer.self_attn.dropout = 0
-    #print('MODEL_SIZE', calc_parameters(model))
+    for layer in model.transformer.layers:
+        layer.self_attn.dropout = 0
     if args.compile:
         model = torch.compile(model)
+    print('MODEL_SIZE', calc_parameters(model))
 
+    run = wandb.init(
+        project="dl-2-bhw1",
+        config=args
+    )
+    wandb.run.log_code(".")
     criterion = LMCriterion()
 
     train_loader = get_loader("train", 
                               max_seq_length=args.max_seq_length,
                               num_workers=args.n_workers,
                               mini_batch_tokens=args.mini_batch_tokens)
-    val_loader   = get_loader("tiny_val", 
+    val_loader   = get_loader("val", 
                               num_workers=args.n_workers,
                               mini_batch_tokens=args.mini_batch_tokens)
 
@@ -76,15 +79,9 @@ if __name__ == "__main__":
         epochs=args.epochs
     )
 
-    run = wandb.init(
-        project="dl-2-bhw1",
-        config=args
-    )
-    wandb.run.log_code(".")
     print('MODEL_SIZE', calc_parameters(model))
     print(model)
 
-    
     with open(args.prompt_file) as file:
         prompts = json.load(file)
 
@@ -115,7 +112,9 @@ if __name__ == "__main__":
             train_correct += (out.max(dim=-1).indices[:, :-1] == text[:, 1:]).int().sum().item()
 
             current_tokens += length.sum().item()
-            scaler.scale(loss * length.sum().item() / args.batch_tokens).backward() 
+            scaler.scale(loss  * length.sum().item() / args.batch_tokens).backward()
+            if i % 100 == 0:
+                print(length.sum().item() / args.batch_tokens)
 
             if current_tokens >= args.batch_tokens:
                 step()
